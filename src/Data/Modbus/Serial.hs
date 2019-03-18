@@ -20,9 +20,8 @@ recvPacket :: Binary a => SerialPort -> TVar ByteString -> IO (Packet a)
 recvPacket port bufTvar = do
   r <- getPacketData bufTvar
   case r of
-    Just p -> do
-      pkt <- decode p
-      case pkt of
+    Just p ->
+      case decode p of
         Nothing -> recvPacket port bufTvar
         Just p0 -> return p0
     Nothing -> do

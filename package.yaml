@@ -28,6 +28,7 @@ dependencies:
 - serialport
 - stm
 - aeson
+- text
 
 library:
   source-dirs: src

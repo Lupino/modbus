@@ -13,9 +13,9 @@ import           Data.Aeson.Types   (Pair, (.=))
 import           Data.Binary        (Binary (..), getWord8, putWord8)
 import           Data.Binary.Get    (getByteString, getWord16be)
 import           Data.Binary.Put    (putByteString, putWord16be)
+import qualified Data.ByteString    as B (length)
 import           Data.List          (find)
 import           Data.Text          (Text)
-import qualified Data.Text          as T (length)
 import           Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import           Data.Word          (Word16)
 
@@ -40,13 +40,15 @@ instance Binary Code where
 
   put Code {..} = do
     putWord16be addr
-    putWord8 $ fromIntegral $ T.length name
-    putByteString $ encodeUtf8 name
+    let bsN = encodeUtf8 name
+    putWord8 $ fromIntegral $ B.length bsN
+    putByteString bsN
     case comment of
       Nothing -> putWord8 0
       Just c -> do
-        putWord8 $ fromIntegral $ T.length c
-        putByteString $ encodeUtf8 c
+        let bsC = encodeUtf8 c
+        putWord8 $ fromIntegral $ B.length bsC
+        putByteString bsC
 
 
 type AddrMap = [Code]

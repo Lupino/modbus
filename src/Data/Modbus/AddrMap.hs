@@ -1,12 +1,15 @@
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards   #-}
 
 module Data.Modbus.AddrMap
   ( Code (..)
   , AddrMap
   , lookupAddr
   , lookupCode
+  , pairCode
   ) where
 
+import           Data.Aeson.Types   (Pair, (.=))
 import           Data.Binary        (Binary (..), getWord8, putWord8)
 import           Data.Binary.Get    (getByteString, getWord16be)
 import           Data.Binary.Put    (putByteString, putWord16be)
@@ -53,3 +56,9 @@ lookupAddr n m = addr <$> find (\x -> name x == n) m
 
 lookupCode :: Word16 -> AddrMap -> Maybe Code
 lookupCode n = find (\x -> addr x == n)
+
+pairCode :: AddrMap -> Word16 -> [Pair]
+pairCode m k =
+  case lookupCode k m of
+    Nothing        -> []
+    Just Code {..} -> [ "comment" .= comment, "name" .= name ]

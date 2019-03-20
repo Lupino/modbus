@@ -15,10 +15,10 @@ import           Data.Modbus.Types          (Address, Request, Response,
                                              mkRegOrCoilMap)
 import qualified Data.Modbus.Types.Request  as Req
 import qualified Data.Modbus.Types.Response as Res
-import           Data.Text                  (Text, intercalate, pack)
+import           Data.Text                  (Text, append, intercalate, pack)
 
 showOne :: Show a => AddrMap -> Text -> Address -> a -> Text
-showOne addrMap h s n = h <> " " <> formatCoilOrReg addrMap s n
+showOne addrMap h s n = h `append` " " `append` formatCoilOrReg addrMap s n
 
 showRequest :: AddrMap -> Request -> Text
 showRequest addrMap (Req.ReadCoils s n)      = showOne addrMap "ReqReadCoils" s n
@@ -42,14 +42,14 @@ showResponse addrMap (Req.WriteCoil _ _) (Res.WriteCoil s1 n1)          = showOn
 showResponse addrMap (Req.WriteReg _ _) (Res.WriteReg s1 n1)            = showOne addrMap "ResWriteReg" s1 n1
 showResponse addrMap (Req.WriteCoils _ _) (Res.WriteCoils s1 n1)        = showOne addrMap "ResWriteCoils" s1 n1
 showResponse addrMap (Req.WriteRegs _ _) (Res.WriteRegs s1 n1)          = showOne addrMap "ResWriteRegs" s1 n1
-showResponse _ r s                                                      = "Error " <> showText r <> " " <> showText s
+showResponse _ r s                                                      = "Error " `append` showText r `append` " " `append` showText s
 
 showMemoryArray :: Show a => AddrMap -> Text -> [(Address, a)] -> Text
 showMemoryArray addrMap h cols =
-  h <> "\n    " <> intercalate "\n    " (map (uncurry (formatCoilOrReg addrMap)) cols)
+  h `append` "\n    " `append` intercalate "\n    " (map (uncurry (formatCoilOrReg addrMap)) cols)
 
 formatCoilOrReg :: Show a => AddrMap -> Address -> a -> Text
-formatCoilOrReg addrMap k v = "(" <> p <> ", " <> r <> ", " <> showText v <> ")"
+formatCoilOrReg addrMap k v = "(" `append` p `append` ", " `append` r `append` ", " `append` showText v `append` ")"
   where c = lookupCode k addrMap
         (p, r) = case c of
                    Nothing -> (showText k, showText k)

@@ -66,7 +66,7 @@ instance Binary Response where
     mapM_ putWord16be cols
   put (ReadInputRegs cols) = do
     putWord8 0x04
-    putWord8 . fromIntegral $ length cols * 8
+    putWord8 . fromIntegral $ length cols * 2
     mapM_ putWord16be cols
   put (WriteCoil field1 field2) = do
     putWord8 0x05

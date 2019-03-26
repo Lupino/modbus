@@ -74,6 +74,6 @@ instance Binary Request where
   put (WriteRegs field1 cols) = do
     putWord8 0x10
     putWord16be field1
-    putWord16be . fromIntegral $ length cols * 2
-    putWord8 . fromIntegral $ length cols
+    putWord16be . fromIntegral $ length cols
+    putWord8 . fromIntegral $ length cols * 2
     mapM_ putWord16be cols

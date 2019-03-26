@@ -32,3 +32,14 @@ dependencies:
 
 library:
   source-dirs: src
+
+tests:
+  modbus-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - modbus

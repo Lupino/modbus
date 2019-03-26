@@ -49,6 +49,7 @@ sendPacket :: Binary a => SerialPort -> Packet a -> IO ()
 sendPacket port p = sendBuffer port $ toStrict $ LB.concat [":", encode p, "\r\n"]
 
 sendBuffer :: SerialPort -> B.ByteString -> IO ()
+sendBuffer _ "" = pure ()
 sendBuffer port bs = do
   v <- send port bs
   when (v < B.length bs) $ sendBuffer port $ B.drop v bs

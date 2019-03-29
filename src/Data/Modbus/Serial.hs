@@ -14,7 +14,7 @@ import           Data.ByteString.Lazy        (ByteString, fromStrict, toStrict)
 import qualified Data.ByteString.Lazy        as LB (append, concat, drop,
                                                     dropWhile, elem, takeWhile)
 import           Data.Modbus.Types           (Packet, decode, encode)
-import           System.Hardware.Serialport  (SerialPort, recv, send)
+import           System.Hardware.Serialport  (SerialPort, flush, recv, send)
 
 recvPacket :: Binary a => SerialPort -> TVar ByteString -> IO (Packet a)
 recvPacket port bufTvar = do
@@ -46,7 +46,9 @@ setPacketData bufTvar bs = atomically $ do
   writeTVar bufTvar (LB.dropWhile (/=0x3A) $ buf `LB.append` bs)
 
 sendPacket :: Binary a => SerialPort -> Packet a -> IO ()
-sendPacket port p = sendBuffer port $ toStrict $ LB.concat [":", encode p, "\r\n"]
+sendPacket port p = do
+  sendBuffer port $ toStrict $ LB.concat [":", encode p, "\r\n"]
+  flush port
 
 sendBuffer :: SerialPort -> B.ByteString -> IO ()
 sendBuffer _ "" = pure ()

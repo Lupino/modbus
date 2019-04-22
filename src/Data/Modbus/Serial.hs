@@ -12,7 +12,8 @@ import           Data.Binary                 (Binary (..))
 import qualified Data.ByteString             as B (ByteString, drop, length)
 import           Data.ByteString.Lazy        (ByteString, fromStrict, toStrict)
 import qualified Data.ByteString.Lazy        as LB (append, concat, drop,
-                                                    dropWhile, elem, takeWhile)
+                                                    dropWhile, elem, head,
+                                                    takeWhile)
 import           Data.Modbus.Types           (Packet, decode, encode)
 import           System.Hardware.Serialport  (SerialPort, flush, recv, send)
 
@@ -31,14 +32,21 @@ recvPacket port bufTvar = do
 
 getPacketData :: TVar ByteString -> IO (Maybe ByteString)
 getPacketData bufTvar = atomically $ do
-  buf <- readTVar bufTvar
+  buf <- LB.dropWhile (/=0x3A) <$> readTVar bufTvar
   if hasPacket buf then do
-    writeTVar bufTvar $ LB.dropWhile (/=0x0A) buf
-    return $ Just $ LB.drop 1 $ LB.takeWhile (/=0x0D) buf
+    writeTVar bufTvar $ LB.dropWhile (/=0x0D) buf
+    return $ Just $ removePrefix $ LB.takeWhile (/=0x0D) buf
   else return Nothing
 
   where hasPacket :: ByteString -> Bool
-        hasPacket = LB.elem 0x0A . LB.dropWhile (/=0x3A)
+        hasPacket = LB.elem 0x0A
+
+-- remove packet prefix :
+removePrefix :: ByteString -> ByteString
+removePrefix bs
+  | LB.head bs == 0x3A = removePrefix $ LB.drop 1 bs
+  | LB.elem 0x3A bs    = removePrefix $ LB.dropWhile (/=0x3A) bs
+  | otherwise          = bs
 
 setPacketData :: TVar ByteString -> ByteString -> IO ()
 setPacketData bufTvar bs = atomically $ do

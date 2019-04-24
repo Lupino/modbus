@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns      #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Data.Modbus.Serial
@@ -19,7 +20,7 @@ import           System.Hardware.Serialport  (SerialPort, flush, recv, send)
 
 recvPacket :: Binary a => SerialPort -> TVar ByteString -> IO (Packet a)
 recvPacket port bufTvar = do
-  r <- getPacketData bufTvar
+  !r <- getPacketData bufTvar
   case r of
     Just p ->
       case decode p of

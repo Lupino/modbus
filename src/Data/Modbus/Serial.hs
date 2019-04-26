@@ -1,5 +1,6 @@
 {-# LANGUAGE BangPatterns      #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeFamilies      #-}
 
 module Data.Modbus.Serial
   ( Serial (..)
@@ -18,6 +19,8 @@ import qualified Data.ByteString.Lazy   as LB (concat)
 import           Data.Modbus.Types      (Packet, decode, encode)
 
 class Serial serial where
+  data SerialConfig serial
+  withSerial :: SerialConfig serial -> (serial -> IO a) -> IO a
   flush :: serial -> IO ()
   recv  :: serial -> Int -> IO ByteString
   send  :: serial -> ByteString -> IO Int

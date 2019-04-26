@@ -21,17 +21,17 @@ description:         Please see the README on GitHub at <https://github.com/Lupi
 
 dependencies:
 - base >= 4.7 && < 5
-- binary
-- hex
-- bytestring
-- unordered-containers
-- serialport
-- stm
-- aeson
-- text
 
 library:
   source-dirs: src
+  dependencies:
+  - binary
+  - hex
+  - bytestring
+  - unordered-containers
+  - stm
+  - aeson
+  - text
 
 tests:
   modbus-test:

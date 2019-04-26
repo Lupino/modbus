@@ -2,23 +2,27 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Data.Modbus.Serial
-  ( recvPacket
+  ( Serial (..)
+  , recvPacket
   , sendPacket
   ) where
 
-import           Control.Concurrent.STM.TVar (TVar, readTVar, writeTVar)
-import           Control.Monad               (when)
-import           Control.Monad.STM           (atomically)
-import           Data.Binary                 (Binary (..))
-import           Data.ByteString             (ByteString)
-import qualified Data.ByteString             as B (drop, dropWhile, elem, head,
-                                                   length, takeWhile)
-import           Data.ByteString.Lazy        (fromStrict, toStrict)
-import qualified Data.ByteString.Lazy        as LB (concat)
-import           Data.Modbus.Types           (Packet, decode, encode)
-import           System.Hardware.Serialport  (SerialPort, flush, recv, send)
+import           Control.Concurrent.STM (TVar, atomically, readTVar, writeTVar)
+import           Control.Monad          (when)
+import           Data.Binary            (Binary (..))
+import           Data.ByteString        (ByteString)
+import qualified Data.ByteString        as B (drop, dropWhile, elem, head,
+                                              length, takeWhile)
+import           Data.ByteString.Lazy   (fromStrict, toStrict)
+import qualified Data.ByteString.Lazy   as LB (concat)
+import           Data.Modbus.Types      (Packet, decode, encode)
 
-recvPacket :: Binary a => SerialPort -> TVar ByteString -> IO (Packet a)
+class Serial serial where
+  flush :: serial -> IO ()
+  recv  :: serial -> Int -> IO ByteString
+  send  :: serial -> ByteString -> IO Int
+
+recvPacket :: (Binary a, Serial serial) => serial -> TVar ByteString -> IO (Packet a)
 recvPacket port bufTvar = do
   !r <- getPacketData bufTvar
   case r of
@@ -54,12 +58,12 @@ setPacketData bufTvar bs = atomically $ do
   buf <- readTVar bufTvar
   writeTVar bufTvar $! buf <> bs
 
-sendPacket :: Binary a => SerialPort -> Packet a -> IO ()
+sendPacket :: (Binary a, Serial serial) => serial -> Packet a -> IO ()
 sendPacket port p = do
   sendBuffer port $ toStrict $ LB.concat [":", encode p, "\r\n"]
   flush port
 
-sendBuffer :: SerialPort -> ByteString -> IO ()
+sendBuffer :: Serial serial => serial -> ByteString -> IO ()
 sendBuffer _ "" = pure ()
 sendBuffer port bs = do
   v <- send port bs

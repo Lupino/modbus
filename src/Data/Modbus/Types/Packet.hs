@@ -16,9 +16,9 @@ import           Data.Hex                   (hex, unhex)
 import           Data.Word                  (Word8)
 
 data Packet a = Packet
-  { packetAddr :: Word8
-  , packetData :: a
-  , packetLrc  :: Word8
+  { packetAddr :: !Word8
+  , packetData :: !a
+  , packetLrc  :: !Word8
   }
   deriving (Show)
 

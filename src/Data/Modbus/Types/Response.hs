@@ -10,14 +10,14 @@ import           Data.Modbus.Types.Internal
 
 
 data Response =
-  ReadCoils [Bit]             -- Read Coils (Output) Status 0xxxx
-  | ReadInputStats [Bit]      -- Read Input Status (Discrete Inputs) 1xxxx
-  | ReadRegs [Value]          -- Read Holding Registers 4xxxx
-  | ReadInputRegs [Value]     -- Read Input Registers 3xxxx
-  | WriteCoil Address Bit     -- Write Single Coil (Output) 0xxxx
-  | WriteReg Address Value    -- Preset Single Register 4xxxx
-  | WriteCoils Address NumReg -- Write Multiple Coils (Outputs) 0xxxx
-  | WriteRegs Address NumReg  -- Write block of contiguous registers 4xxxx
+  ReadCoils ![Bit]              -- Read Coils (Output) Status 0xxxx
+  | ReadInputStats ![Bit]       -- Read Input Status (Discrete Inputs) 1xxxx
+  | ReadRegs ![Value]           -- Read Holding Registers 4xxxx
+  | ReadInputRegs ![Value]      -- Read Input Registers 3xxxx
+  | WriteCoil !Address !Bit     -- Write Single Coil (Output) 0xxxx
+  | WriteReg !Address !Value    -- Preset Single Register 4xxxx
+  | WriteCoils !Address !NumReg -- Write Multiple Coils (Outputs) 0xxxx
+  | WriteRegs !Address !NumReg  -- Write block of contiguous registers 4xxxx
 
   deriving (Show)
 

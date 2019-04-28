@@ -9,14 +9,14 @@ import           Data.Binary.Put            (putWord16be)
 import           Data.Modbus.Types.Internal
 
 data Request =
-  ReadCoils Address NumReg        -- Read Coils (Output) Status 0xxxx
-  | ReadInputStats Address NumReg -- Read Input Status (Discrete Inputs) 1xxxx
-  | ReadRegs Address NumReg       -- Read Holding Registers 4xxxx
-  | ReadInputRegs Address NumReg  -- Read Input Registers 3xxxx
-  | WriteCoil Address Bit         -- Write Single Coil (Output) 0xxxx
-  | WriteReg Address Value        -- Preset Single Register 4xxxx
-  | WriteCoils Address [Bit]      -- Write Multiple Coils (Outputs) 0xxxx
-  | WriteRegs Address [Value]     -- Write block of contiguous registers 4xxxx
+  ReadCoils !Address !NumReg        -- Read Coils (Output) Status 0xxxx
+  | ReadInputStats !Address !NumReg -- Read Input Status (Discrete Inputs) 1xxxx
+  | ReadRegs !Address !NumReg       -- Read Holding Registers 4xxxx
+  | ReadInputRegs !Address !NumReg  -- Read Input Registers 3xxxx
+  | WriteCoil !Address !Bit         -- Write Single Coil (Output) 0xxxx
+  | WriteReg !Address !Value        -- Preset Single Register 4xxxx
+  | WriteCoils !Address ![Bit]      -- Write Multiple Coils (Outputs) 0xxxx
+  | WriteRegs !Address ![Value]     -- Write block of contiguous registers 4xxxx
 
   deriving (Show)
 

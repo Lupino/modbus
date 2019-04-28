@@ -22,10 +22,10 @@ import           Data.Modbus.Types.Response (Response)
 import qualified Data.Modbus.Types.Response as Res
 
 data Memory = Memory
-  { memoryCoils      :: HashMap Address Bit
-  , memoryInputStats :: HashMap Address Bit
-  , memoryRegs       :: HashMap Address Value
-  , memoryInputRegs  :: HashMap Address Value
+  { memoryCoils      :: !(HashMap Address Bit)
+  , memoryInputStats :: !(HashMap Address Bit)
+  , memoryRegs       :: !(HashMap Address Value)
+  , memoryInputRegs  :: !(HashMap Address Value)
   }
   deriving (Show)
 
